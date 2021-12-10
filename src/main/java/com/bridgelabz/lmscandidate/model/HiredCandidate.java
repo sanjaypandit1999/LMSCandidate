@@ -8,15 +8,18 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import lombok.Data;
 
 @Data
 @Entity(name = "hired_candidate")
 @Table(name = "hired_candidate")
 public class HiredCandidate {
-	  @Id
-	  @GeneratedValue(strategy = GenerationType.AUTO)
+		@Id
+		@GeneratedValue(strategy = GenerationType.AUTO)
 	    private long id;
+	
 	    private String firstName;
 	    private String middleName;
 	    private String lastName;
@@ -32,10 +35,10 @@ public class HiredCandidate {
 	    private String aggregateRemark;
 	    private String onboardingStatus;
 	    private String status;
-	    private String creatorUser;
-	    private String joinDate;
+//	    private long creatorUser;
+	    private Date joinDate;
 	    private String location;
-	    private double aggPer;
-	    private long currentPinCode;
-	    private long permanentPincode;
+//	    private double aggPer;
+//	    private long currentPinCode;
+//	    private long permanentPincode;
 }

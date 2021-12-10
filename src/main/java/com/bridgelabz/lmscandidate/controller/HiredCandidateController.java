@@ -13,9 +13,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.bridgelabz.lmscandidate.dto.HiredCandidateDTO;
 import com.bridgelabz.lmscandidate.dto.ResponseDTO;
@@ -65,8 +67,8 @@ public class HiredCandidateController {
      * @return UserResponse as JWTToken
      */
 	@PostMapping("/save")
-	public ResponseEntity<ResponseDTO> saveCandidateData(@Valid @RequestBody HiredCandidateDTO hiredCandidateDTO) {
-		HiredCandidate  hiredCandidate = iCandidateService.saveCandidate(hiredCandidateDTO);
+	public ResponseEntity<ResponseDTO> saveCandidateData(@RequestParam String token, @RequestBody HiredCandidateDTO hiredCandidateDTO) {
+		HiredCandidate  hiredCandidate = iCandidateService.saveCandidate(token,hiredCandidateDTO);
 		log.debug("HiredCandidate DTO: " +hiredCandidateDTO.toString());
 		ResponseDTO response = new ResponseDTO("HireCandidate Data saved Successfully",
 				jwtToken.createToken( hiredCandidate.getId()));
@@ -80,10 +82,10 @@ public class HiredCandidateController {
      * @param long userId and UserDTO body 
      * @return UserResponse as JWTToken
      */
-	@PutMapping("/update/{candidateId}")
-	public ResponseEntity<ResponseDTO> updateHiredCandidateData(@PathVariable("candidateId") long candidateId,
+	@PutMapping("/update")
+	public ResponseEntity<ResponseDTO> updateHiredCandidateData(@RequestHeader String token,
 			@Valid @RequestBody HiredCandidateDTO hiredCandidateDTO) {
-		HiredCandidate  hiredCandidate = iCandidateService.updateUser(candidateId, hiredCandidateDTO);
+		HiredCandidate  hiredCandidate = iCandidateService.updateUser(token, hiredCandidateDTO);
 		ResponseDTO response = new ResponseDTO("Updated Contact Data ", jwtToken.createToken( hiredCandidate.getId()));
 		return new ResponseEntity<ResponseDTO>(response, HttpStatus.OK);
 
@@ -114,11 +116,19 @@ public class HiredCandidateController {
 		ResponseDTO respDTO = new ResponseDTO("Deleteall:", message);
 		return new ResponseEntity<ResponseDTO>(respDTO, HttpStatus.OK);
 	}
-	
-	 @GetMapping("/profile")
-	    public ResponseEntity<ResponseDTO> getCandidateProfile(@RequestParam String token) {
-		 HiredCandidate  hiredCandidate = iCandidateService.candidateProfile(token);
-		ResponseDTO response = new ResponseDTO(hiredCandidate.getFirstName()+" Profile ", hiredCandidate);
+
+	@GetMapping("/profile")
+	public ResponseEntity<ResponseDTO> getCandidateProfile(@RequestParam String token) {
+		HiredCandidate hiredCandidate = iCandidateService.candidateProfile(token);
+		ResponseDTO response = new ResponseDTO(hiredCandidate.getFirstName() + " Profile ", hiredCandidate);
 		return new ResponseEntity<ResponseDTO>(response, HttpStatus.OK);
-	    }
+	}
+
+	@PostMapping("/takecandidatelist")
+	public ResponseEntity<ResponseDTO> importHiredCandidate(@RequestParam("file") MultipartFile filePath) {
+		String message = iCandidateService.saveCandidateDetails(filePath);
+		ResponseDTO response = new ResponseDTO(" Updated ", message);
+		return new ResponseEntity<ResponseDTO>(response,
+				HttpStatus.OK);
+	}
 }

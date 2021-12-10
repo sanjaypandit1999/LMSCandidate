@@ -7,7 +7,6 @@ import lombok.Data;
 @Data
 public class HiredCandidateDTO {
 	
-    private long id;
     private String firstName;
     private String middleName;
     private String lastName;
@@ -23,10 +22,10 @@ public class HiredCandidateDTO {
     private String aggregateRemark;
     private String onboardingStatus;
     private String status;
-    private String creatorUser;
-    private String joinDate;
+//    private long creatorUser;
+    private Date joinDate;
     private String location;
-    private double aggPer;
-    private long currentPinCode;
-    private long permanentPincode;
+//    private double aggPer;
+//    private long currentPinCode;
+//    private long permanentPincode;
 }
