@@ -22,10 +22,6 @@ public class HiredCandidateDTO {
     private String aggregateRemark;
     private String onboardingStatus;
     private String status;
-//    private long creatorUser;
     private Date joinDate;
     private String location;
-//    private double aggPer;
-//    private long currentPinCode;
-//    private long permanentPincode;
 }

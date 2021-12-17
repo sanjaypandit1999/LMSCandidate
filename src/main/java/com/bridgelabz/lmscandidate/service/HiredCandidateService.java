@@ -35,26 +35,27 @@ public class HiredCandidateService implements IHiredCandidateService {
 	@Autowired
 	JwtToken jwtToken;
 	
-//	@Autowired
-//	ModelMapper modelMapper;
+	@Autowired
+	ModelMapper modelMapper;
+	@Autowired 
+	private SequenceGeneratorService sequenceGeneratorService;
 
 
 	@Override
-	public List<HiredCandidate> getCandidate() {
+	public List<HiredCandidate> getCandidate(String token) {
 		return hiredCandidateRepository.findAll();
 	}
 
 	@Override
-	public HiredCandidate getCandidateById(long candidateId) {
+	public HiredCandidate getCandidateById(String token, long candidateId) {
 		return hiredCandidateRepository.findById(candidateId)
 				.orElseThrow(() -> new HireCandidateException("User with id " + candidateId + " does not exist..!"));
 	}
 
 	@Override
 	public HiredCandidate saveCandidate(String token, HiredCandidateDTO hiredCandidateDTO) {
-		Long id = jwtToken.decodeToken(token);
 		HiredCandidate hiredCandidate = new HiredCandidate();
-		
+		hiredCandidate.setId(sequenceGeneratorService.generateSequence(hiredCandidate.SEQUENCE_NAME));
 		hiredCandidate.setFirstName(hiredCandidateDTO.getFirstName());
 		hiredCandidate.setLastName(hiredCandidateDTO.getLastName());
 		hiredCandidate.setMiddleName(hiredCandidateDTO.getMiddleName());
@@ -69,24 +70,31 @@ public class HiredCandidateService implements IHiredCandidateService {
 		hiredCandidate.setKnowledgeRemark(hiredCandidateDTO.getKnowledgeRemark());
 		hiredCandidate.setOnboardingStatus(hiredCandidateDTO.getOnboardingStatus());
 		hiredCandidate.setStatus(hiredCandidateDTO.getStatus());
-//		hiredCandidate.setCreatorUser(id);
 		hiredCandidate.setJoinDate(hiredCandidateDTO.getJoinDate());
-		hiredCandidate.setLocation(hiredCandidateDTO.getLocation());
-//		hiredCandidate.setAggPer(hiredCandidateDTO.getAggPer());
-//		hiredCandidate.setCurrentPinCode(hiredCandidateDTO.getCurrentPinCode());
-//		hiredCandidate.setPermanentPincode(hiredCandidateDTO.getPermanentPincode());
-		
-		
+		hiredCandidate.setLocation(hiredCandidateDTO.getLocation());	
 		return hiredCandidateRepository.save(hiredCandidate);
 	}
 
 	@Override
-	public HiredCandidate updateUser(String token, @Valid HiredCandidateDTO hiredCandidateDTO) {
-		Long id = jwtToken.decodeToken(token);
-		Optional<HiredCandidate> isPresent = hiredCandidateRepository.findById(id);
-		if(isPresent.isPresent()) {
-			this.saveCandidate(token,hiredCandidateDTO);
-			return isPresent.get();		
+	public HiredCandidate updateUser(String token,long id, @Valid HiredCandidateDTO candidateDTO) {
+		Optional<HiredCandidate> isUserPresent = hiredCandidateRepository.findById(id);
+		if (isUserPresent.isPresent()) 
+		{
+			isUserPresent.get().setFirstName(candidateDTO.getFirstName());
+			isUserPresent.get().setMiddleName(candidateDTO.getMiddleName());
+			isUserPresent.get().setLastName(candidateDTO.getLastName());
+			isUserPresent.get().setEmail(candidateDTO.getEmail());
+			isUserPresent.get().setMobileNumber(candidateDTO.getMobileNumber());
+			isUserPresent.get().setHiredCity(candidateDTO.getHiredCity());
+			isUserPresent.get().setHiredDate(candidateDTO.getHiredDate());
+			isUserPresent.get().setDegree(candidateDTO.getDegree());
+			isUserPresent.get().setHiredLab(candidateDTO.getHiredLab());
+			isUserPresent.get().setAttitudeRemark(candidateDTO.getAttitudeRemark());
+			isUserPresent.get().setKnowledgeRemark(candidateDTO.getKnowledgeRemark());
+			isUserPresent.get().setOnboardingStatus(candidateDTO.getOnboardingStatus());
+			isUserPresent.get().setJoinDate(candidateDTO.getJoinDate());
+			isUserPresent.get().setLocation(candidateDTO.getLocation());
+		    return	hiredCandidateRepository.save(isUserPresent.get()); 
 		}
 		else
 			throw	new HireCandidateException("User with id " + id + " does not exist..!");
@@ -94,21 +102,23 @@ public class HiredCandidateService implements IHiredCandidateService {
 	}
 
 	@Override
-	public void deleteUser(long candidateId) {
-		HiredCandidate hiredCandidate = this.getCandidateById(candidateId);
-		hiredCandidateRepository.delete(hiredCandidate);
+	public void deleteUser(String token, long candidateId) {
+		Optional<HiredCandidate> hiredCandidate = hiredCandidateRepository.findById(candidateId);
+		if(hiredCandidate.isPresent()) {
+		hiredCandidateRepository.deleteById(candidateId);
+		}else
+			throw	new HireCandidateException("User with id " + candidateId + " does not exist..!");
 
 	}
 
 	@Override
-	public String deleteAllCandidateData() {
+	public String deleteAllCandidateData(String token) {
 		hiredCandidateRepository.deleteAll();
-		return null;
+		return "Delete all data";
 	}
 
 	@Override
-	public HiredCandidate candidateProfile(String token) {
-		Long id = jwtToken.decodeToken(token);
+	public HiredCandidate candidateProfile(String token, long id) {
 		Optional<HiredCandidate> isPresent = hiredCandidateRepository.findById(id);
 		if (isPresent.isPresent()) {
 			return isPresent.get();
@@ -118,7 +128,7 @@ public class HiredCandidateService implements IHiredCandidateService {
 
 	@SuppressWarnings("resource")
 	@Override
-	public String saveCandidateDetails(MultipartFile filePath) {
+	public String saveCandidateDetails(String token,MultipartFile filePath) {
 		HiredCandidateDTO hiredCandidateDTO = new HiredCandidateDTO();
 		ModelMapper modelMapper = new ModelMapper();
 		boolean flag = true;
@@ -165,18 +175,10 @@ public class HiredCandidateService implements IHiredCandidateService {
 						hiredCandidateDTO.setOnboardingStatus(cell.getStringCellValue());
 						cell = (XSSFCell) cells.next();
 						hiredCandidateDTO.setStatus(cell.getStringCellValue());
-//						cell = (XSSFCell) cells.next();
-//						hiredCandidateDTO.setCreatorUser((long)cell.getNumericCellValue());
 						cell = (XSSFCell) cells.next();
 						hiredCandidateDTO.setJoinDate(cell.getDateCellValue());
 						cell = (XSSFCell) cells.next();
 						hiredCandidateDTO.setLocation(cell.getStringCellValue());
-//						cell = (XSSFCell) cells.next();
-//						hiredCandidateDTO.setAggPer(cell.getNumericCellValue());
-//						cell = (XSSFCell) cells.next();
-//						hiredCandidateDTO.setCurrentPinCode((long) cell.getNumericCellValue());
-//						cell = (XSSFCell) cells.next();
-//						hiredCandidateDTO.setPermanentPincode((long) cell.getNumericCellValue());
 
 						HiredCandidate hiredCandidate = modelMapper.map(hiredCandidateDTO, HiredCandidate.class);
 						hiredCandidateRepository.save(hiredCandidate);
