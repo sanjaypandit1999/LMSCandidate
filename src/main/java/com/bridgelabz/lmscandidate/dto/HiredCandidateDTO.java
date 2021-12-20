@@ -4,6 +4,13 @@ import java.util.Date;
 
 import lombok.Data;
 
+/**
+ * purpose to pass data with multiple attributes in one shot from client to server
+ * 
+ * @author Sanjay
+ * @version 1.0
+ * @since 12/17/2021
+ */
 @Data
 public class HiredCandidateDTO {
 	

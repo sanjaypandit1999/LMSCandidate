@@ -30,12 +30,21 @@ import com.bridgelabz.lmscandidate.util.JwtToken;
 @RequestMapping("/hiredcandidate")
 public class HiredCandidateController {
 	
+	 /**
+     * purpose to get object from bean by using @Autowired
+     *
+     */
 	@Autowired
 	private IHiredCandidateService iCandidateService;
 	@Autowired
 	private JwtToken jwtToken;
 
-	
+	 /**
+     * Take  candidate details from database database
+     *
+     * @param  token
+     * @return response is all candidate data
+     */
 	@RequestMapping(value = { "", "/", "/get" })
 	public ResponseEntity<ResponseDTO> getCandidateData(@RequestHeader String token) {
 		List<HiredCandidate> candidateList = iCandidateService.getCandidate(token);
@@ -44,9 +53,9 @@ public class HiredCandidateController {
 	}
 
 	 /**
-     * Take user id to get user details from database database
+     * Take user id to get candidate details from database database
      *
-     * @param long userId
+     * @param long userId and token
      * @return response is user data
      */
 	@GetMapping("/get/{candidateId}")
@@ -58,9 +67,9 @@ public class HiredCandidateController {
 	}
 	
 	 /**
-     * Take user details to register in database
+     * Take candidate details to save in database
      *
-     * @param userDTO
+     * @param hiredCandidateDTO and token
      * @return UserResponse as JWTToken
      */
 	@PostMapping("/saved")
@@ -75,7 +84,7 @@ public class HiredCandidateController {
 	 /**
      * Take user details to update in database
      *
-     * @param long userId and UserDTO body 
+     * @param long candidateId, hiredCandidateDTO body and token
      * @return UserResponse as JWTToken
      */
 	@PutMapping("/update/{id}")
@@ -88,10 +97,10 @@ public class HiredCandidateController {
 	}
 
 	 /**
-     * Take user details to register in database
+     * Take candidateId to delete candidate in database
      *
-     * @param long userId
-     * @return id is deleted 
+     * @param long userId and token
+     * @return candidate profile
      */
 	@DeleteMapping("/delete/{candidateId}")
 	public ResponseEntity<ResponseDTO> deleteCandidateData(@RequestHeader String token, @PathVariable("candidateId") long candidateId) {
@@ -114,7 +123,7 @@ public class HiredCandidateController {
 	}
 
 	 /**
-     * Take user id to get candidate details from database
+     * Take user id to get candidate profile from database
      *
      * @param long userId and token
      * @return profile data

@@ -1,6 +1,5 @@
 package com.bridgelabz.lmscandidate.service;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
 import java.util.List;
@@ -11,7 +10,6 @@ import javax.validation.Valid;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFCell;
-import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.modelmapper.ModelMapper;
@@ -25,11 +23,21 @@ import com.bridgelabz.lmscandidate.model.HiredCandidate;
 import com.bridgelabz.lmscandidate.repository.HiredCandidateRepository;
 import com.bridgelabz.lmscandidate.util.JwtToken;
 
+/**
+ * purpose to write business logic implements by IUserService
+ * 
+ * @author Sanjay
+ * @version 1.0
+ * @since 12/17/2021
+ */
 @Service
 public class HiredCandidateService implements IHiredCandidateService {
 	
 
-	
+	/**
+	 * Inject object by using @Autowired annotation from bean
+	 * 
+	 */
 	@Autowired
 	private HiredCandidateRepository hiredCandidateRepository;
 	@Autowired
@@ -41,17 +49,35 @@ public class HiredCandidateService implements IHiredCandidateService {
 	private SequenceGeneratorService sequenceGeneratorService;
 
 
+	/**
+	 * purpose to retrieve all data from database
+	 * 
+	 * @return all candidate data from DB
+	 */
 	@Override
 	public List<HiredCandidate> getCandidate(String token) {
 		return hiredCandidateRepository.findAll();
 	}
 
+	/**
+	 * purpose to find individual user
+	 * 
+	 * @param long candidateId and token
+	 * @return candidate data
+	 */
 	@Override
 	public HiredCandidate getCandidateById(String token, long candidateId) {
 		return hiredCandidateRepository.findById(candidateId)
 				.orElseThrow(() -> new HireCandidateException("User with id " + candidateId + " does not exist..!"));
 	}
 
+	/**
+	 * purpose to save candidate data in DB
+	 * 
+	 * @param hiredCandidateDTO body and token
+	 * @return save candidate data
+	 */
+	@SuppressWarnings("static-access")
 	@Override
 	public HiredCandidate saveCandidate(String token, HiredCandidateDTO hiredCandidateDTO) {
 		HiredCandidate hiredCandidate = new HiredCandidate();
@@ -75,6 +101,12 @@ public class HiredCandidateService implements IHiredCandidateService {
 		return hiredCandidateRepository.save(hiredCandidate);
 	}
 
+	/**
+	 * purpose to update  individual user
+	 * 
+	 * @param candidateId and body userDTO
+	 * @return updated user data
+	 */
 	@Override
 	public HiredCandidate updateUser(String token,long id, @Valid HiredCandidateDTO candidateDTO) {
 		Optional<HiredCandidate> isUserPresent = hiredCandidateRepository.findById(id);
@@ -101,6 +133,12 @@ public class HiredCandidateService implements IHiredCandidateService {
 		
 	}
 
+	/**
+	 * purpose to delete individual user
+	 * 
+	 * @param candidateId and token
+	 * @return delete user data
+	 */
 	@Override
 	public void deleteUser(String token, long candidateId) {
 		Optional<HiredCandidate> hiredCandidate = hiredCandidateRepository.findById(candidateId);
@@ -111,12 +149,24 @@ public class HiredCandidateService implements IHiredCandidateService {
 
 	}
 
+	/**
+	 * purpose to delete all user data in database
+	 * 
+	 * @param token
+	 * @return Successfully deleted all the User
+	 */
 	@Override
 	public String deleteAllCandidateData(String token) {
 		hiredCandidateRepository.deleteAll();
 		return "Delete all data";
 	}
 
+	 /**
+     * purpose to view candidate profile
+     *
+     * @param long userId and token
+     * @return show candidate profile 
+     */
 	@Override
 	public HiredCandidate candidateProfile(String token, long id) {
 		Optional<HiredCandidate> isPresent = hiredCandidateRepository.findById(id);
@@ -126,6 +176,12 @@ public class HiredCandidateService implements IHiredCandidateService {
 		throw new HireCandidateException("User with id " + id + " does not exist..!");
 	}
 
+	/**
+     * Take xlsx file data drop in database
+     *
+     * @param file and token
+     * @return Successfully data drop in database
+     */
 	@SuppressWarnings("resource")
 	@Override
 	public String saveCandidateDetails(String token,MultipartFile filePath) {

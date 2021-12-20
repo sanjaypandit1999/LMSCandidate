@@ -9,6 +9,14 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.Data;
 
+/**
+ * purpose to all data store in mongoDB as a document
+ * 
+ * 
+ * @author Sanjay
+ * @version 1.0
+ * @since 12/17/2021
+ */
 @Document(collection = "HiredCandidate")
 @Data
 public class HiredCandidate {

@@ -10,6 +10,13 @@ import org.springframework.web.multipart.MultipartFile;
 import com.bridgelabz.lmscandidate.dto.HiredCandidateDTO;
 import com.bridgelabz.lmscandidate.model.HiredCandidate;
 
+/**
+ *Interface of userService layer
+ * 
+ * @author Sanjay
+ * @version 1.0
+ * @since 12/17/2021
+ */
 @Service
 public interface IHiredCandidateService {
 

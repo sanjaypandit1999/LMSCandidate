@@ -10,12 +10,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
-
 import com.bridgelabz.lmscandidate.model.DataBaseSequence;
+
+/**
+ *purpose to generate auto increment id in mongoDb
+ * 
+ * @author Sanjay
+ * @version 1.0
+ * @since 12/17/2021
+ */
 @Service
 public class SequenceGeneratorService {
 
-
+	/**
+	 *Inject object in this class using by  @Autowired
+	 */
 	@Autowired
     private  MongoOperations mongoOperations;
 
@@ -24,6 +33,12 @@ public class SequenceGeneratorService {
         this.mongoOperations = mongoOperations;
     }
 
+    /**
+     *purpose to generate sequence id in mongoDb
+     * 
+     * @param seqName
+     *@return sequence object
+     */
     public  long generateSequence(String seqName) {
 
         DataBaseSequence counter = mongoOperations.findAndModify(query(where("_id").is(seqName)),
