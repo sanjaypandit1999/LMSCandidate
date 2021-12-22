@@ -17,10 +17,12 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.bridgelabz.lmscandidate.dto.HiredCandidateDTO;
 import com.bridgelabz.lmscandidate.dto.ResponseDTO;
+import com.bridgelabz.lmscandidate.exception.HireCandidateException;
 import com.bridgelabz.lmscandidate.model.HiredCandidate;
 import com.bridgelabz.lmscandidate.service.IHiredCandidateService;
 import com.bridgelabz.lmscandidate.util.JwtToken;
@@ -75,10 +77,8 @@ public class HiredCandidateController {
 	@PostMapping("/saved")
 	public ResponseEntity<ResponseDTO> saveCandidateData(@RequestHeader String token, @RequestBody HiredCandidateDTO hiredCandidateDTO) {
 		HiredCandidate  hiredCandidate = iCandidateService.saveCandidate(token,hiredCandidateDTO);
-		ResponseDTO response = new ResponseDTO("HireCandidate Data saved Successfully",
-				jwtToken.createToken( hiredCandidate.getId()));
+		ResponseDTO response = new ResponseDTO("HireCandidate Data saved Successfully", hiredCandidate);
 		return new ResponseEntity<ResponseDTO>(response, HttpStatus.OK);
-
 	}
 
 	 /**
